@@ -2,6 +2,7 @@ import {
   BookmarkIcon,
   ChatIcon,
   DotsHorizontalIcon,
+  EmojiHappyIcon,
   HeartIcon,
 } from "@heroicons/react/outline";
 import React from "react";
@@ -27,16 +28,25 @@ export default function Post({ post }) {
       />
 
       {/* post buttons */}
-     
+
       <div className=" flex justify-between px-4 pt-4 ">
         <div className=" flex space-x-4">
           <HeartIcon className="btn" />
-          <ChatIcon className='btn'/>
+          <ChatIcon className="btn" />
         </div>
         <div>
-                <BookmarkIcon className='btn'/>
-            </div>
+          <BookmarkIcon className="btn" />
+        </div>
       </div>
+      {/* post comments */}
+      <p className=" p-5 truncate"><span className=" font-bold mr-2">{post.username}</span>{post.caption}</p>
+      {/* post input box */}
+      <form className=" flex items-center p-4">
+        
+      <EmojiHappyIcon className=" h-7"/>
+      <input className=" border-none flex-1 focus:ring-0" type="text" placeholder="Enter Your Comments"/>
+      <button className=" text-blue-400 font-bold">Post</button>
+      </form>
     </div>
   );
 }
