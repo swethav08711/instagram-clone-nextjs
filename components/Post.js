@@ -39,13 +39,19 @@ export default function Post({ post }) {
         </div>
       </div>
       {/* post comments */}
-      <p className=" p-5 truncate"><span className=" font-bold mr-2">{post.username}</span>{post.caption}</p>
+      <p className=" p-5 truncate">
+        <span className=" font-bold mr-2">{post.username}</span>
+        {post.caption}
+      </p>
       {/* post input box */}
       <form className=" flex items-center p-4">
-        
-      <EmojiHappyIcon className=" h-7"/>
-      <input className=" border-none flex-1 focus:ring-0" type="text" placeholder="Enter Your Comments"/>
-      <button className=" text-blue-400 font-bold">Post</button>
+        <EmojiHappyIcon className=" h-7" />
+        <input
+          className=" border-none flex-1 focus:ring-0"
+          type="text"
+          placeholder="Enter Your Comments"
+        />
+        <button className=" text-blue-400 font-bold">Post</button>
       </form>
     </div>
   );
