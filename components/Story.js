@@ -1,10 +1,13 @@
+import { PlusIcon } from '@heroicons/react/solid'
 import React from 'react'
 
-export default function Story({story}) {
+export default function Story({img,username,isUser}) {
   return (
-    <div >
-        <img className='h-14 rounded-full  p-[1.5px] border-red-500 border-2 cursor-pointer hover:scale-110 transit duration-200 ease-out' src={story.img} alt={story.username}/>
-        <p className=' text-xs w-14 truncate'>{story.username}</p>
+    <div  className=' relative group cursor-pointer'>
+        <img className='h-14 rounded-full  p-[1.5px] border-red-500 border-2 group-hover:scale-110 transit duration-200 ease-out' src={img} alt={username}/>
+      {isUser && <PlusIcon className=' h-6 absolute top-4 left-4 text-white '/>
+      }  
+      <p className=' text-xs w-14 truncate'>{username}</p>
     </div>
   )
 }
