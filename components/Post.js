@@ -6,13 +6,18 @@ import {
   EmojiHappyIcon,
   HeartIcon,
 } from "@heroicons/react/outline";
+import { HeartIcon as HeartIconFilled } from "@heroicons/react/solid";
+
 import {
   addDoc,
   collection,
+  deleteDoc,
+  doc,
   onSnapshot,
   orderBy,
   query,
   serverTimestamp,
+  setDoc,
 } from "firebase/firestore";
 import { useSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
@@ -22,6 +27,8 @@ export default function Post({ id, userImg, username, caption, img }) {
   const { data: session } = useSession();
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState([]);
+  const [likes, setLikes] = useState([]);
+  const [hasLiked, setHasLiked] = useState(false);
   useEffect(() => {
     const unsubscribe = onSnapshot(
       query(
@@ -34,6 +41,19 @@ export default function Post({ id, userImg, username, caption, img }) {
     );
     return unsubscribe;
   }, [db, id]);
+  useEffect(() => {
+    const unsubscribe = onSnapshot(
+      collection(db, "posts", id, "likes"),
+      (snapshot) => {
+        setLikes(snapshot.docs);
+      }
+    );
+  }, [db, id]);
+  useEffect(() => {
+    setHasLiked(
+      likes.findIndex((like) => like.id === session?.user.uid) !== -1
+    );
+  }, [likes]);
   async function sendComment(event) {
     event.preventDefault();
     const commentToSend = comment;
@@ -44,6 +64,15 @@ export default function Post({ id, userImg, username, caption, img }) {
       userImage: session.user.image,
       timestamp: serverTimestamp(),
     });
+  }
+  async function likePost() {
+    if (hasLiked) {
+      await deleteDoc(doc(db, "posts", id, "likes", session.user.uid));
+    } else {
+      await setDoc(doc(db, "posts", id, "likes", session.user.uid), {
+        username: session.user.username,
+      });
+    }
   }
   return (
     <div className=" bg-white my-7 border rounded-md">
@@ -58,13 +87,25 @@ export default function Post({ id, userImg, username, caption, img }) {
         <DotsHorizontalIcon className=" h-5" />
       </div>
       {/* post image */}
-      <img className=" object-cover w-full" src={img} alt={username} />
+      <img
+        className=" object-cover w-full h-[400px]"
+        src={img}
+        alt={username}
+      />
 
       {/* post buttons */}
       {session && (
         <div className=" flex justify-between px-4 pt-4 ">
           <div className=" flex space-x-4">
-            <HeartIcon className="btn" />
+            {hasLiked ? (
+              <HeartIconFilled
+                onClick={likePost}
+                className="btn text-red-400"
+              />
+            ) : (
+              <HeartIcon onClick={likePost} className="btn" />
+            )}
+
             <ChatIcon className="btn" />
           </div>
           <div>
@@ -80,7 +121,10 @@ export default function Post({ id, userImg, username, caption, img }) {
       {comments.length > 0 && (
         <div className=" mx-10 max-h-24 overflow-y-scroll  scrollbar-none">
           {comments.map((comment) => (
-            <div className=" flex items-center space-x-2 mb-2 ">
+            <div
+              key={comment.userImage}
+              className=" flex items-center space-x-2 mb-2 "
+            >
               <img
                 className=" h-7 rounded-full object-cover "
                 src={comment.data().userImage}
